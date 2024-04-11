@@ -45,7 +45,22 @@ class Graph {
         }
         printDistances(distance);
     }
-
+    private int findMinVertex(int[] distance, boolean[] visited) {
+        int minVertex = -1;
+        for (int i = 0; i < adjacencyList.size(); i++) {
+            if (!visited[i] && (minVertex == -1 || distance[i] < distance[minVertex])) {
+                minVertex = i;
+            }
+        }
+        return minVertex;
+    }
+    private void printDistances(int[] distance) {
+        System.out.println("Vertex   Distance from Source");
+        for (int i = 0; i < distance.length; i++) {
+            System.out.println(i + "\t\t" + distance[i]);
+        }
+    }
+}
 public class Main {
     public static void main(String[] args) {
         int V = 5;
