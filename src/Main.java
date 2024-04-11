@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 class Edge {
     int source;
     int destination;
@@ -23,17 +24,28 @@ class Graph {
         Edge reverseEdge = new Edge(destination, source, weight);
         adjacencyList.get(destination).add(reverseEdge);
     }
-    public void printGraph() {
+    public void dijkstra(int startVertex) {
+        int[] distance = new int[adjacencyList.size()];
+        boolean[] visited = new boolean[adjacencyList.size()];
         for (int i = 0; i < adjacencyList.size(); i++) {
-            List<Edge> edges = adjacencyList.get(i);
-            System.out.print("Vertex " + i + " is connected to: ");
-            for (Edge edge : edges) {
-                System.out.print(edge.destination + " (Weight: " + edge.weight + ") ");
-            }
-            System.out.println();
+            distance[i] = Integer.MAX_VALUE;
+            visited[i] = false;
         }
+        distance[startVertex] = 0;
+        for (int i = 0; i < adjacencyList.size() - 1; i++) {
+            int minVertex = findMinVertex(distance, visited);
+            visited[minVertex] = true;
+            List<Edge> edges = adjacencyList.get(minVertex);
+            for (Edge edge : edges) {
+                if (!visited[edge.destination] && distance[minVertex] != Integer.MAX_VALUE &&
+                        distance[minVertex] + edge.weight < distance[edge.destination]) {
+                    distance[edge.destination] = distance[minVertex] + edge.weight;
+                }
+            }
+        }
+        printDistances(distance);
     }
-}
+
 public class Main {
     public static void main(String[] args) {
         int V = 5;
@@ -45,6 +57,7 @@ public class Main {
         graph.addEdge(1, 4, 50);
         graph.addEdge(2, 3, 60);
         graph.addEdge(3, 4, 70);
-        graph.printGraph();
+        int startVertex = 0;
+        graph.dijkstra(startVertex);
     }
 }
