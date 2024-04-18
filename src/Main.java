@@ -26,7 +26,7 @@ class Graph {
         Edge reverseEdge = new Edge(destination, source, weight);
         adjacencyList.get(destination).add(reverseEdge);
     }
-    // Metoda Kruskala
+    //Metoda Kruskala
     public List<Edge> kruskal() {
         List<Edge> result = new ArrayList<>();
         PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight));
@@ -43,7 +43,7 @@ class Graph {
         }
         return result;
     }
-    // Metoda Prima
+    //Metoda Prima
     public List<Edge> prima() {
         List<Edge> result = new ArrayList<>();
         boolean[] visited = new boolean[adjacencyList.size()];
