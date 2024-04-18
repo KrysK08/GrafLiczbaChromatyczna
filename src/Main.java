@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 class Edge {
     int source;
     int destination;
@@ -24,40 +26,71 @@ class Graph {
         Edge reverseEdge = new Edge(destination, source, weight);
         adjacencyList.get(destination).add(reverseEdge);
     }
-    public void dijkstra(int startVertex) {
-        int[] distance = new int[adjacencyList.size()];
+    // Metoda Kruskala
+    public List<Edge> kruskal() {
+        List<Edge> result = new ArrayList<>();
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight));
+        UnionFind uf = new UnionFind(adjacencyList.size());
+        for (List<Edge> edges : adjacencyList) {
+            pq.addAll(edges);
+        }
+        while (!pq.isEmpty() && result.size() < adjacencyList.size() - 1) {
+            Edge edge = pq.poll();
+            if (!uf.isConnected(edge.source, edge.destination)) {
+                uf.union(edge.source, edge.destination);
+                result.add(edge);
+            }
+        }
+        return result;
+    }
+    // Metoda Prima
+    public List<Edge> prima() {
+        List<Edge> result = new ArrayList<>();
         boolean[] visited = new boolean[adjacencyList.size()];
-        for (int i = 0; i < adjacencyList.size(); i++) {
-            distance[i] = Integer.MAX_VALUE;
-            visited[i] = false;
-        }
-        distance[startVertex] = 0;
-        for (int i = 0; i < adjacencyList.size() - 1; i++) {
-            int minVertex = findMinVertex(distance, visited);
-            visited[minVertex] = true;
-            List<Edge> edges = adjacencyList.get(minVertex);
-            for (Edge edge : edges) {
-                if (!visited[edge.destination] && distance[minVertex] != Integer.MAX_VALUE &&
-                        distance[minVertex] + edge.weight < distance[edge.destination]) {
-                    distance[edge.destination] = distance[minVertex] + edge.weight;
-                }
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight));
+        int startVertex = 0;
+        visit(startVertex, visited, pq);
+        while (!pq.isEmpty() && result.size() < adjacencyList.size() - 1) {
+            Edge edge = pq.poll();
+            int nextVertex = edge.destination;
+            if (!visited[nextVertex]) {
+                result.add(edge);
+                visit(nextVertex, visited, pq);
             }
         }
-        printDistances(distance);
+        return result;
     }
-    private int findMinVertex(int[] distance, boolean[] visited) {
-        int minVertex = -1;
-        for (int i = 0; i < adjacencyList.size(); i++) {
-            if (!visited[i] && (minVertex == -1 || distance[i] < distance[minVertex])) {
-                minVertex = i;
+    private void visit(int vertex, boolean[] visited, PriorityQueue<Edge> pq) {
+        visited[vertex] = true;
+        for (Edge edge : adjacencyList.get(vertex)) {
+            if (!visited[edge.destination]) {
+                pq.add(edge);
             }
         }
-        return minVertex;
     }
-    private void printDistances(int[] distance) {
-        System.out.println("Vertex   Distance from Source");
-        for (int i = 0; i < distance.length; i++) {
-            System.out.println(i + "\t\t" + distance[i]);
+    class UnionFind {
+        int[] parent;
+        public UnionFind(int n) {
+            parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+        public int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+        public void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX != rootY) {
+                parent[rootX] = rootY;
+            }
+        }
+        public boolean isConnected(int x, int y) {
+            return find(x) == find(y);
         }
     }
 }
@@ -72,7 +105,17 @@ public class Main {
         graph.addEdge(1, 4, 50);
         graph.addEdge(2, 3, 60);
         graph.addEdge(3, 4, 70);
-        int startVertex = 0;
-        graph.dijkstra(startVertex);
+        // Kruskal's Algorithm
+        System.out.println("Kruskal's Algorithm:");
+        List<Edge> kruskalResult = graph.kruskal();
+        for (Edge edge : kruskalResult) {
+            System.out.println(edge.source + " - " + edge.destination + ": " + edge.weight);
+        }
+        // Prima's Algorithm
+        System.out.println("\nPrima's Algorithm:");
+        List<Edge> primaResult = graph.prima();
+        for (Edge edge : primaResult) {
+            System.out.println(edge.source + " - " + edge.destination + ": " + edge.weight);
+        }
     }
 }
