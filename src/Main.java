@@ -105,13 +105,12 @@ public class Main {
         graph.addEdge(1, 4, 50);
         graph.addEdge(2, 3, 60);
         graph.addEdge(3, 4, 70);
-        // Kruskal's Algorithm
         System.out.println("Kruskal's Algorithm:");
         List<Edge> kruskalResult = graph.kruskal();
         for (Edge edge : kruskalResult) {
             System.out.println(edge.source + " - " + edge.destination + ": " + edge.weight);
         }
-        // Prima's Algorithm
+
         System.out.println("\nPrima's Algorithm:");
         List<Edge> primaResult = graph.prima();
         for (Edge edge : primaResult) {
