@@ -91,7 +91,7 @@ class Graph {
             }
         }
     }
-    public int greedyColoring() {
+    public int greedyColoring(){
         int[] result = new int[adjacencyList.size()];
         boolean[] availableColors = new boolean[adjacencyList.size()];
         result[0] = 0;
