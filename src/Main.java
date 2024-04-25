@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-class Edge {
+class Edge  {
     int source;
     int destination;
     int weight;
