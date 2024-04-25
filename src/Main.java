@@ -12,7 +12,7 @@ class Edge  {
         this.weight = weight;
     }
 }
-class UnionFind {
+class UnionFind{
     int[] parent;
     public UnionFind(int n) {
         parent = new int[n];
