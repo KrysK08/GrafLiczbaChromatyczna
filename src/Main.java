@@ -12,6 +12,31 @@ class Edge {
         this.weight = weight;
     }
 }
+class UnionFind {
+    int[] parent;
+    public UnionFind(int n) {
+        parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+    public void union(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        if (rootX != rootY) {
+            parent[rootX] = rootY;
+        }
+    }
+    public boolean isConnected(int x, int y) {
+        return find(x) == find(y);
+    }
+}
 class Graph {
     List<List<Edge>> adjacencyList;
     public Graph(int vertices) {
@@ -26,7 +51,6 @@ class Graph {
         Edge reverseEdge = new Edge(destination, source, weight);
         adjacencyList.get(destination).add(reverseEdge);
     }
-    //Metoda Kruskala
     public List<Edge> kruskal() {
         List<Edge> result = new ArrayList<>();
         PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o.weight));
@@ -43,7 +67,6 @@ class Graph {
         }
         return result;
     }
-    //Metoda Prima
     public List<Edge> prima() {
         List<Edge> result = new ArrayList<>();
         boolean[] visited = new boolean[adjacencyList.size()];
@@ -68,30 +91,39 @@ class Graph {
             }
         }
     }
-    class UnionFind {
-        int[] parent;
-        public UnionFind(int n) {
-            parent = new int[n];
-            for (int i = 0; i < n; i++) {
-                parent[i] = i;
+    public int greedyColoring() {
+        int[] result = new int[adjacencyList.size()];
+        boolean[] availableColors = new boolean[adjacencyList.size()];
+        result[0] = 0;
+        for (int i = 1; i < adjacencyList.size(); i++) {
+            availableColors[i] = true;
+        }
+        for (int i = 1; i < adjacencyList.size(); i++) {
+            for (Edge edge : adjacencyList.get(i)) {
+                if (result[edge.destination] != -1) {
+                    availableColors[result[edge.destination]] = false;
+                }
+            }
+            int color;
+            for (color = 0; color < adjacencyList.size(); color++) {
+                if (availableColors[color]) {
+                    break;
+                }
+            }
+            result[i] = color;
+            for (Edge edge : adjacencyList.get(i)) {
+                if (result[edge.destination] != -1) {
+                    availableColors[result[edge.destination]] = true;
+                }
             }
         }
-        public int find(int x) {
-            if (parent[x] != x) {
-                parent[x] = find(parent[x]);
-            }
-            return parent[x];
-        }
-        public void union(int x, int y) {
-            int rootX = find(x);
-            int rootY = find(y);
-            if (rootX != rootY) {
-                parent[rootX] = rootY;
+        int maxColor = 0;
+        for (int color : result) {
+            if (color > maxColor) {
+                maxColor = color;
             }
         }
-        public boolean isConnected(int x, int y) {
-            return find(x) == find(y);
-        }
+        return maxColor + 1;
     }
 }
 public class Main {
@@ -110,11 +142,11 @@ public class Main {
         for (Edge edge : kruskalResult) {
             System.out.println(edge.source + " - " + edge.destination + ": " + edge.weight);
         }
-
         System.out.println("\nPrima's Algorithm:");
         List<Edge> primaResult = graph.prima();
         for (Edge edge : primaResult) {
             System.out.println(edge.source + " - " + edge.destination + ": " + edge.weight);
         }
+        System.out.println("\nMinimum number of colors needed: " + graph.greedyColoring());
     }
 }
